@@ -5,15 +5,11 @@
 package TokoKu.ws.a;
 
 import TokoKu.ws.a.exceptions.NonexistentEntityException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -21,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Asus
  */
 @RestController
+@RequestMapping("/barang")
 //@ResponseBody
 public class tokoController {
+    
     Barang barang = new Barang();
     BarangJpaController barangCtrl = new BarangJpaController();
     
@@ -44,6 +42,18 @@ public class tokoController {
             return "Barang dengan id: " + id + "tidak ditemukan.";
         }
     }
+    
+    @PostMapping ("/create")
+    public String createBarang(@RequestBody Barang barang){
+        try {
+            barangCtrl.create(barang);
+            return "Product Added.";
+        }
+        catch (Exception error){
+            return "Product with that ID already exist.";
+        }
+    }
+    
 //    private static Map<String, Barang> barangRepo = new HashMap<>();
 //    static {
 //        Barang barang = new Barang();
