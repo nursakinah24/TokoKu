@@ -6,19 +6,20 @@ package TokoKu.ws.a;
 
 import TokoKu.ws.a.exceptions.NonexistentEntityException;
 import java.util.List;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
  * @author Asus
  */
-@RestController
-@RequestMapping("/barang")
-//@ResponseBody
+@Controller
+//@RequestMapping("/barang")
+@ResponseBody
 public class tokoController {
     
     Barang barang = new Barang();
@@ -44,51 +45,45 @@ public class tokoController {
     }
     
     @PostMapping ("/create")
-    public String createBarang(@RequestBody Barang barang){
+    public String createBarang(@RequestBody Barang barangID){
         try {
-            barangCtrl.create(barang);
-            return "Product Added.";
+            barangCtrl.create(barangID);
+            return "Barang Ditambahkan.";
         }
         catch (Exception error){
-            return "Product with that ID already exist.";
+            return "Barang dengan id tersebut telah ada.";
         }
     }
     
-//    private static Map<String, Barang> barangRepo = new HashMap<>();
-//    static {
-//        Barang barang = new Barang();
-//        
-//        barangRepo.keySet();
-//    }   
-//    
-//     @RequestMapping(value = "/barang")
-//    //getProduct method
-//    public ResponseEntity<Object> getBarang(){
-//        //return response entity represent the HttpStatus
-//        return new ResponseEntity<>(barangRepo.values(), HttpStatus.OK);
-//    }
-    
-//    @RequestMapping ("/getBarang/{id}")
-//    public String getBarang(@PathVariable("id") int id){
-//        try{
-//            barang = barangCtrl.findBarang(id);
-//            return barang.getNama()+"<br>"+barang.getJumlah();
-//        }
-//        catch (Exception error) {
-//            return "Barang Tidak Ditemukan.";
-//        }
-//    }
-   
-//
-//     @RequestMapping ("/update/{id}")
-//    public String updateBarang(@PathVariable("id") int id){
-//        try {
-//           barangCtrl.destroy(id);
-//           barang.setId(id);
-//            return id + " Dihapus.";
-//        }
-//        catch (NonexistentEntityException error){
-//            return id + " Barang tidak ditemukan.";
-//        }
-//    }
+    @RequestMapping ("/update/{id}")
+    public String updateBarang(@PathVariable("id") int id, @RequestBody Barang barangID) {
+        try {
+            barang = barangCtrl.findBarang(id);
+            barangID.setId(id);
+            Barang barangBaru = new Barang();
+            
+            if(barang.getId() != id){
+                return "Barang dengan id tersebut tidak ditemukan.";
+            } else if(barangID.getNama() == null) {
+                barangID.setNama(barang.getNama());
+                barangCtrl.edit(barangID);
+                barangBaru = barangCtrl.findBarang(id);
+                return "Barang :\n id : " + barang.getId() + "\nnama : " + barangBaru.getNama() + "\njumlah : " + barangBaru.getJumlah() + "\n\nTelah berhasil diperbaharui.";
+            } else if (barangID.getJumlah() == null) {
+                barangID.setJumlah(barang.getJumlah());
+                barangCtrl.edit(barangID);
+                barangBaru = barangCtrl.findBarang(id);
+                return "Barang :\n id : " + barang.getId() + "\nnama : " + barangBaru.getNama() + "\njumlah : " + barangBaru.getJumlah() + "\n\nTelah berhasil diperbaharui.";
+            } else if (barangID.getNama() != null && barangID.getJumlah() != null ){
+                barangCtrl.edit(barangID);
+                barangBaru = barangCtrl.findBarang(id);
+                return "Barang :\nid : " + barang.getId() + "\nnama : " + barangBaru.getNama() + "\njumlah : " + barangBaru.getJumlah() + "\n\nTelah berhasil diperbaharui.";
+            } else {
+                return "error.";
+            }
+        }
+        catch (Exception error){
+            return "Barang dengan id tersebut tidak ada";
+        }
+    }
 }
